@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#parted -s /dev/nvme0n1 mklabel gpt
+#parted /dev/nvme0n1 mkpart primary fat32 1MiB 2GiB set 1 esp on
+#parted /dev/nvme0n1 mkpart primary linux-swap 2GiB 20GiB
+#parted /dev/nvme0n1 mkpart primary 20GiB 80GiB
+#parted /dev/nvme0n1 mkpart primary 80GiB 100%
+
+# Creating filesystems
+mkfs.vfat -F32 /dev/nvme0n1p1
+mkswap /dev/nvme0n1p2
+swapon /dev/nvme0n1p2
+mkfs.ext4 -F /dev/nvme0n1p3
+#mkfs.ext4 -F /dev/nvme0n1p4
+
+# Mounting partitions and creating folders
+mount /dev/nvme0n1p3 /mnt
+mkdir /mnt/boot
+mkdir /mnt/home
+mount /dev/nvme0n1p1 /mnt/boot
+mount /dev/nvme0n1p4 /mnt/home
+
+# Edit pacman configuration
+sed -i 's/^#Color/Color/' /etc/pacman.conf
+sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 10/' /etc/pacman.conf
+
+# Updating pacman
+pacman -Sy
+
+# Installing Arch Base
+pacstrap -K /mnt base base-devel linux linux-firmware nano
+
+# Generating fstab file on new environment
+genfstab -U /mnt >> /mnt/etc/fstab
+
+# Chroot into new environment
+arch-chroot /mnt
