@@ -3,19 +3,22 @@
 #parted -s /dev/sda mklabel gpt
 #parted /dev/sda mkpart primary fat32 1MiB 2GiB set 1 esp on
 #parted /dev/sda mkpart primary linux-swap 2GiB 10GiB
-#parted /dev/sda mkpart primary 10GiB 100%
+#parted /dev/sda mkpart primary 10GiB 70GiB
+#parted /dev/sda mkpart primary 70GiB 100%
 
 # Creating filesystems
 mkfs.vfat -F32 /dev/sda1
 mkswap /dev/sda2
 swapon /dev/sda2
 mkfs.ext4 -F /dev/sda3
+#mkfs.ext4 -F /dev/sda4
 
 # Mounting partitions and creating folders
 mount /dev/sda3 /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
 mount /dev/sda1 /mnt/boot
+mount /dev/sda4 /mnt/home
 
 # Edit pacman configuration
 sed -i 's/^#Color/Color/' /etc/pacman.conf
