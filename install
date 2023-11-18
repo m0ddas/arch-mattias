@@ -54,8 +54,8 @@ echo "initrd initramfs-linux.img" | tee -a /boot/loader/entries/arch.conf >/dev/
 echo "options root=$(blkid | grep '/dev/sda33' | cut -d' ' -f5 | sed 's/"//g') rw splash lsm=landlock,lockdown,yama,integrity,apparmor,bpf" | tee -a /boot/loader/entries/arch.conf >/dev/null
 
 # Adding users and setting passwords
-useradd -m -G wheel modda
-echo "modda:$(cat password_hash.txt)" | sudo chpasswd -e
+useradd -m -G wheel vajern
+echo "vajern:$(cat password_hash.txt)" | sudo chpasswd -e
 echo "root:$(cat password_hash.txt)" | sudo chpasswd -e
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL'
 
