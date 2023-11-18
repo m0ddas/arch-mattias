@@ -51,7 +51,7 @@ echo "default arch" | tee -a /boot/loader/loader.conf
 echo "title Arch Linux" | tee -a /boot/loader/entries/arch.conf >/dev/null
 echo "linux vmlinuz-linux" | tee -a /boot/loader/entries/arch.conf >/dev/null
 echo "initrd initramfs-linux.img" | tee -a /boot/loader/entries/arch.conf >/dev/null
-echo "options root=$(blkid | grep '/dev/nvme0n1p3' | cut -d' ' -f5 | sed 's/"//g') rw splash lsm=landlock,lockdown,yama,integrity,apparmor,bpf" | tee -a /boot/loader/entries/arch.conf >/dev/null
+echo "options root=$(blkid | grep '/dev/sda33' | cut -d' ' -f5 | sed 's/"//g') rw splash lsm=landlock,lockdown,yama,integrity,apparmor,bpf" | tee -a /boot/loader/entries/arch.conf >/dev/null
 
 # Adding users and setting passwords
 useradd -m -G wheel modda
