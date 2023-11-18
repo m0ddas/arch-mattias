@@ -59,8 +59,11 @@ echo "modda:$(cat password_hash.txt)" | sudo chpasswd -e
 echo "root:$(cat password_hash.txt)" | sudo chpasswd -e
 sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL'
 
-# Desktop Environment
+# Gnome Desktop Environment
 #pacman -S --noconfirm gdm gnome gnome-terminal networkmanager firefox
+
+# KDE Desktop Environment
+#pacman -S --noconfirm ssdm plasma kde-applications networkmanager
 
 # Applications
 #pacman -S --noconfirm spotify-launcher fish fuse vlc flatpak
@@ -75,8 +78,10 @@ sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL'
 #pacman -S --noconfirm mesa lib32-mesa libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader
 
 # All in one
-pacman -S --noconfirm gdm gnome gnome-terminal networkmanager firefox spotify-launcher fish fuse vlc flatpak libreoffice-fresh-sv mesa lib32-mesa libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader steam wine-staging winetricks wine-mono wine-gecko giflib lib32-giflib libpng lib32-libpng libldap lib32-libldap gnutls lib32-gnutls mpg123 lib32-mpg123 openal lib32-openal v4l-utils lib32-v4l-utils libpulse lib32-libpulse alsa-plugins lib32-alsa-plugins alsa-lib lib32-alsa-lib libjpeg-turbo lib32-libjpeg-turbo libxcomposite lib32-libxcomposite libxinerama lib32-libxinerama ncurses lib32-ncurses opencl-icd-loader lib32-opencl-icd-loader libxslt lib32-libxslt libva lib32-libva gtk3 lib32-gtk3 gst-plugins-base-libs lib32-gst-plugins-base-libs cups samba dosbox
+pacman -S --noconfirm ssdm plasma kde-applications networkmanager steam wine-staging winetricks wine-mono wine-gecko giflib lib32-giflib libpng lib32-libpng libldap lib32-libldap gnutls lib32-gnutls mpg123 lib32-mpg123 openal lib32-openal v4l-utils lib32-v4l-utils libpulse lib32-libpulse alsa-plugins lib32-alsa-plugins alsa-lib lib32-alsa-lib libjpeg-turbo lib32-libjpeg-turbo libxcomposite lib32-libxcomposite libxinerama lib32-libxinerama ncurses lib32-ncurses opencl-icd-loader lib32-opencl-icd-loader libxslt lib32-libxslt libva lib32-libva gtk3 lib32-gtk3 gst-plugins-base-libs lib32-gst-plugins-base-libs vulkan-icd-loader lib32-vulkan-icd-loader cups samba dosbox libreoffice-fresh-sv mesa lib32-mesa libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader
 
+# Enable Services
+#systemctl enable gdm.service
+systemctl enable sddm
 systemctl enable NetworkManager.service
-systemctl enable gdm.service
 systemctl enable avahi-daemon.service
