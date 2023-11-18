@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Creating password_hash.txt
+read -s -p "Enter your password: " user_password
+echo
+echo "$user_password" | openssl passwd -6 -stdin > password_hash.txt
+
+# Setting up timezone and clock
+ln -sf /usr/share/zoneinfo/Europe/Stockholm /etc/localtime
+hwclock --systohc
+
+# Language
+touch /etc/locale.conf
+sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+sed -i 's/^#sv_SE.UTF-8 UTF-8/sv_SE.UTF-8 UTF-8/' /etc/locale.gen
+locale-gen
+
+echo "LANG=C.UTF-8" | tee -a /etc/locale.conf >/dev/null
+echo "LC_NUMERIC=sv_SE.UTF-8" | tee -a /etc/locale.conf >/dev/null
+echo "LC_TIME=sv_SE.UTF-8" | tee -a /etc/locale.conf >/dev/null
+echo "LC_MONETARY=sv_SE.UTF-8" | tee -a /etc/locale.conf >/dev/null
+echo "LC_PAPER=sv_SE.UTF-8" | tee -a /etc/locale.conf >/dev/null
+echo "LC_MEASUREMENT=sv_SE.UTF-8" | tee -a /etc/locale.conf >/dev/null
+
+# Setting up keymap and terminal font
+touch /etc/vconsole.conf
+echo "KEYMAP=sv-latin1" | tee -a /etc/vconsole.conf >/dev/null
+echo "FONT=ter-124n" | tee -a /etc/vconsole.conf >/dev/null
+
+# Setting up Hostname and Network
+touch /etc/hostname
+echo "linux-desktop" | tee -a /etc/hostname >/dev/null
+
+echo "127.0.0.1  localhost" | tee -a /etc/hosts >/dev/null
+echo "::  localhost" | tee -a /etc/hosts >/dev/null
+echo "127.0.1.1  linux-desktop" | tee -a /etc/hosts >/dev/null
+
+# Configuring /etc/pacman.conf
+sed -i 's/^#Color/Color/' /etc/pacman.conf
+sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 10/' /etc/pacman.conf
+nano /etc/pacman.conf
+pacman -Syy >/dev/null
+
+# Installing and Configuring Boot Manager
+pacman -S --noconfirm efibootmgr
+
+bootctl --path=/boot install
+
+touch /boot/loader/entries/arch.conf
+echo "default arch" | tee -a /boot/loader/loader.conf
+echo "title Arch Linux" | tee -a /boot/loader/entries/arch.conf >/dev/null
+echo "linux vmlinuz-linux" | tee -a /boot/loader/entries/arch.conf >/dev/null
+echo "initrd initramfs-linux.img" | tee -a /boot/loader/entries/arch.conf >/dev/null
+echo "options root=$(blkid | grep '/dev/nvme0n1p3' | cut -d' ' -f5 | sed 's/"//g') rw splash lsm=landlock,lockdown,yama,integrity,apparmor,bpf" | tee -a /boot/loader/entries/arch.conf >/dev/null
+
+# Adding users and setting passwords
+useradd -m -G wheel modda
+echo "modda:$(cat password_hash.txt)" | sudo chpasswd -e
+echo "root:$(cat password_hash.txt)" | sudo chpasswd -e
+sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL'
+
+# Desktop Environment
+#pacman -S --noconfirm gdm gnome gnome-terminal networkmanager firefox
+
+# Applications
+#pacman -S --noconfirm spotify-launcher fish fuse vlc flatpak
+
+# Gaming Wine, Steam, Lutris, and all dependencies
+# pocman -S --noconfirm steam wine-staging winetricks wine-mono wine-gecko giflib lib32-giflib libpng lib32-libpng libldap lib32-libldap gnutls lib32-gnutls mpg123 lib32-mpg123 openal lib32-openal v4l-utils lib32-v4l-utils libpulse lib32-libpulse alsa-plugins lib32-alsa-plugins alsa-lib lib32-alsa-lib libjpeg-turbo lib32-libjpeg-turbo libxcomposite lib32-libxcomposite libxinerama lib32-libxinerama ncurses lib32-ncurses opencl-icd-loader lib32-opencl-icd-loader libxslt lib32-libxslt libva lib32-libva gtk3 lib32-gtk3 gst-plugins-base-libs lib32-gst-plugins-base-libs vulkan-icd-loader lib32-vulkan-icd-loader cups samba dosbox
+
+# Office
+#pacman -S --noconfirm libreoffice-fresh-sv
+
+# AMD GPU Drivers
+#pacman -S --noconfirm mesa lib32-mesa libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader
+
+# All in one
+pacman -S --noconfirm gdm gnome gnome-terminal networkmanager firefox spotify-launcher fish fuse vlc flatpak libreoffice-fresh-sv mesa lib32-mesa libva-mesa-driver lib32-libva-mesa-driver mesa-vdpau lib32-mesa-vdpau vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader steam wine-staging winetricks wine-mono wine-gecko giflib lib32-giflib libpng lib32-libpng libldap lib32-libldap gnutls lib32-gnutls mpg123 lib32-mpg123 openal lib32-openal v4l-utils lib32-v4l-utils libpulse lib32-libpulse alsa-plugins lib32-alsa-plugins alsa-lib lib32-alsa-lib libjpeg-turbo lib32-libjpeg-turbo libxcomposite lib32-libxcomposite libxinerama lib32-libxinerama ncurses lib32-ncurses opencl-icd-loader lib32-opencl-icd-loader libxslt lib32-libxslt libva lib32-libva gtk3 lib32-gtk3 gst-plugins-base-libs lib32-gst-plugins-base-libs cups samba dosbox
+
+systemctl enable NetworkManager.service
+systemctl enable gdm.service
+systemctl enable avahi-daemon.service
